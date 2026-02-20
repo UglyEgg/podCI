@@ -20,23 +20,32 @@ jobs:
 
       - name: Install system dependencies
         run: |
-          apk add --no-cache bash build-base musl-dev pkgconfig git
+          apk add --no-cache \
+            bash \
+            build-base \
+            musl-dev \
+            pkgconfig \
+            git \
+            curl \
+            ca-certificates \
+            tar
 
       - name: Install Rust components (rustfmt, clippy)
         run: |
           rustup component add rustfmt clippy
 
-      - name: Install cargo-deny
+      - name: Install cargo-deny (prebuilt)
         run: |
-          cargo install cargo-deny --locked
-
-      - name: Install cargo-pretty-test
-        run: |
-          cargo install cargo-pretty-test --locked
+          ver="0.16.3"
+          arch="x86_64-unknown-linux-musl"
+          url="https://github.com/EmbarkStudios/cargo-deny/releases/download/${ver}/cargo-deny-${ver}-${arch}.tar.gz"
+          curl -fsSL "$url" | tar -xz -C /usr/local/bin cargo-deny
+          cargo-deny --version
 
       - name: Install cargo-nextest (prebuilt)
         run: |
           curl -fsSL https://get.nexte.st/latest/linux-musl | tar -xz -C /usr/local/bin
+          cargo-nextest --version
 
       - name: Gate
         run: |
