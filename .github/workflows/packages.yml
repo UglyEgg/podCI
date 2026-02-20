@@ -2,9 +2,7 @@ name: Packages
 
 on:
   push:
-  #  tags:
-  #    - "v*"
-  workflow_dispatch:
+  pull-request:
 
 permissions:
   contents: read
