@@ -30,7 +30,7 @@ jobs:
       - name: Install build deps
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends             build-essential             devscripts             debhelper             dh-cargo             pkg-config             ca-certificates             git
+          sudo apt-get install -y --no-install-recommends build-essential devscripts debhelper dh-cargo pkg-config ca-certificates git
 
       - name: Prepare debian/ tree
         run: |
@@ -62,7 +62,7 @@ jobs:
       - name: Install build deps
         run: |
           dnf -y update
-          dnf -y install             git             curl             tar             gzip             rpm-build             rpmdevtools             bash             rust             cargo             pkgconf-pkg-config             ca-certificates
+          dnf -y install git curl tar gzip rpm-build rpmdevtools bash bash-completion zsh fish rust cargo rust-packaging pkgconf-pkg-config             ca-certificates
 
       - name: Checkout
         uses: actions/checkout@v4
