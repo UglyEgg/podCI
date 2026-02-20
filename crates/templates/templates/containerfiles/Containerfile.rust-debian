@@ -1,0 +1,24 @@
+# SPDX-License-Identifier: MIT OR Apache-2.0
+# Copyright (c) 2026 Richard Majewski - Varanid Works
+
+FROM docker.io/library/rust:1-bookworm
+
+# Required day-one tooling for podCI templates.
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+      ca-certificates \
+      bash \
+      git \
+      pkg-config \
+      libssl-dev \
+      binutils \
+ && rm -rf /var/lib/apt/lists/*
+
+# Rust toolchain components + common cargo subcommands expected by SRE teams.
+RUN rustup component add rustfmt clippy llvm-tools-preview \
+ && cargo install --locked cargo-nextest \
+ && cargo install --locked cargo-expand \
+ && cargo install --locked cargo-binutils \
+ && cargo install --locked cargo-audit \
+ && cargo install --locked cargo-deny \
+ && rm -rf /usr/local/cargo/registry /usr/local/cargo/git

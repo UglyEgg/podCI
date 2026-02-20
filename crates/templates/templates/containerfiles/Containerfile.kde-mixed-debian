@@ -1,0 +1,35 @@
+# SPDX-License-Identifier: MIT OR Apache-2.0
+# Copyright (c) 2026 Richard Majewski - Varanid Works
+
+FROM docker.io/library/rust:1-bookworm
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# KDE/Qt6 + KF6 development baseline (Debian/glibc) plus Rust toolchain.
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+      ca-certificates \
+      bash \
+      git \
+      cmake \
+      ninja-build \
+      pkg-config \
+      g++ \
+      ccache \
+      extra-cmake-modules \
+      qt6-base-dev \
+      qt6-base-dev-tools \
+      qt6-tools-dev \
+      qt6-tools-dev-tools \
+      qt6-svg-dev \
+      libkf6coreaddons-dev \
+      libkf6i18n-dev \
+      libkf6kio-dev \
+      libkf6jobwidgets-dev \
+      libkf6notifications-dev \
+      libkf6statusnotifieritem-dev \
+      libkf6iconthemes-dev \
+ && rm -rf /var/lib/apt/lists/*
+
+RUN rustup component add rustfmt clippy \
+ && rm -rf /usr/local/cargo/registry /usr/local/cargo/git

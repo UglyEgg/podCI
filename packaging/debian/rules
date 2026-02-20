@@ -1,0 +1,22 @@
+#!/usr/bin/make -f
+# SPDX-License-Identifier: MIT OR Apache-2.0
+# Copyright (c) 2026 Richard Majewski - Varanid Works
+
+%:
+	dh $@ --buildsystem=cargo
+
+override_dh_auto_build:
+	# Generate man page + shell completions into ./dist/
+	cargo run -p podci --bin podci-assets --features gen-assets --locked -- gen
+	dh_auto_build --release -- --locked
+
+override_dh_auto_install:
+	dh_auto_install
+	install -Dm755 target/release/podci debian/podci/usr/bin/podci
+	install -Dm644 dist/podci.1 debian/podci/usr/share/man/man1/podci.1
+	install -Dm644 dist/completions/podci.bash debian/podci/usr/share/bash-completion/completions/podci
+	install -Dm644 dist/completions/_podci debian/podci/usr/share/zsh/site-functions/_podci
+	install -Dm644 dist/completions/podci.fish debian/podci/usr/share/fish/vendor_completions.d/podci.fish
+	# Templates
+	mkdir -p debian/podci/usr/share/podci/templates
+	cp -a templates/* debian/podci/usr/share/podci/templates/

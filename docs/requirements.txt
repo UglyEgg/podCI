@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: MIT OR Apache-2.0
+# Copyright (c) 2026 Richard Majewski - Varanid Works
+
+# Docs toolchain (see docs/development/docs-site.md)
+zensical==0.0.23
+
+# Zensical uses Python Markdown + extensions, but does not bundle all optional
+# extensions used by a given project. Install our configured extension set.
+Markdown==3.10.2
+pymdown-extensions==10.21
+Pygments==2.19.2

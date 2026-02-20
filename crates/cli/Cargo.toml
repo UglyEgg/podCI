@@ -1,0 +1,51 @@
+# SPDX-License-Identifier: MIT OR Apache-2.0
+# Copyright (c) 2026 Richard Majewski - Varanid Works
+
+[package]
+name = "podci"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "podci"
+path = "src/main.rs"
+
+[[bin]]
+# Packaging helper binary. Generates `dist/podci.1` + shell completions.
+name = "podci-assets"
+path = "src/bin/podci_assets.rs"
+required-features = ["gen-assets"]
+
+[lib]
+name = "podci"
+path = "src/lib.rs"
+
+[dependencies]
+anyhow.workspace = true
+clap.workspace = true
+chrono.workspace = true
+rand.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+
+# Only needed for the `podci-assets` binary.
+clap_complete = { workspace = true, optional = true }
+clap_mangen = { workspace = true, optional = true }
+
+podci-config = { path = "../config", version = "0.1.0" }
+podci-namespace = { path = "../namespace", version = "0.1.0" }
+podci-manifest = { path = "../manifest", version = "0.1.0" }
+podci-templates = { path = "../templates", version = "0.1.0" }
+podci-podman = { path = "../podman", version = "0.1.0" }
+podci-gc = { path = "../gc", version = "0.1.0" }
+
+[dev-dependencies]
+assert_cmd = "2"
+
+[features]
+# Build the `podci-assets` helper binary.
+gen-assets = ["dep:clap_complete", "dep:clap_mangen"]

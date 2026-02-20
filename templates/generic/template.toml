@@ -1,0 +1,5 @@
+# SPDX-License-Identifier: MIT OR Apache-2.0
+# Copyright (c) 2026 Richard Majewski - Varanid Works
+
+name = "generic"
+description = "Minimal generic starter; edit podci.toml to fit your repo"

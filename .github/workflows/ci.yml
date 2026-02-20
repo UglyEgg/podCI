@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  linux-musl:
+    runs-on: ubuntu-latest
+
+    container:
+      image: rust:1-alpine
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          apk add --no-cache \
+            bash \
+            build-base \
+            musl-dev \
+            pkgconfig \
+            git \
+            curl \
+            ca-certificates \
+            tar
+
+      - name: Install Rust components (rustfmt, clippy)
+        run: |
+          rustup component add rustfmt clippy
+
+      - name: Install cargo-deny (prebuilt)
+        run: |
+          ver="0.19.0"
+          arch="x86_64-unknown-linux-musl"
+          url="https://github.com/EmbarkStudios/cargo-deny/releases/download/${ver}/cargo-deny-${ver}-${arch}.tar.gz"
+          curl -fsSL "$url" -o cargo-deny.tar.gz
+          tar -xzf cargo-deny.tar.gz
+          mv cargo-deny*/cargo-deny /usr/local/bin/
+          cargo-deny --version
+
+      - name: Install cargo-nextest (prebuilt)
+        run: |
+          curl -fsSL https://get.nexte.st/latest/linux-musl | tar -xz -C /usr/local/bin
+          cargo-nextest --version
+
+      - name: Gate
+        run: |
+          ./scripts/release_gate.sh

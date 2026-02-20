@@ -1,0 +1,24 @@
+# SPDX-License-Identifier: MIT OR Apache-2.0
+# Copyright (c) 2026 Richard Majewski - Varanid Works
+
+version = 1
+project = "REPLACE_ME"
+
+[profiles.dev]
+container = "rust-debian"
+
+[jobs.default]
+profile = "dev"
+step_order = ["fmt", "lint", "test", "build"]
+
+[jobs.default.steps.fmt]
+run = ["cargo", "fmt", "--all", "--", "--check"]
+
+[jobs.default.steps.lint]
+run = ["cargo", "clippy", "--all-targets", "--all-features", "--", "-D", "warnings"]
+
+[jobs.default.steps.test]
+run = ["cargo", "nextest", "run"]
+
+[jobs.default.steps.build]
+run = ["cargo", "build", "--release"]

@@ -1,0 +1,100 @@
+# SPDX-License-Identifier: MIT OR Apache-2.0
+# Copyright (c) 2026 Richard Majewski - Varanid Works
+
+site_name: podCI
+site_description: Local-first Podman CI runner for reproducible multi-language builds
+site_url: https://uglyegg.github.io/podCI/
+repo_name: UglyEgg/podCI
+repo_url: https://github.com/UglyEgg/podCI
+site_author: Richard Majewski - Varanid Works
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  logo: assets/logo.webp
+  favicon: assets/favicon.png
+  palette:
+    # Default to dark mode. Provide a toggle for light mode.
+    - scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+    - scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - content.code.copy
+
+extra_css:
+  - assets/stylesheets/theme.css
+
+
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.details
+  - pymdownx.inlinehilite
+  - pymdownx.highlight
+
+
+nav:
+  - Home: index.md
+  - Install:
+      - install/index.md
+      - Arch Linux: install/arch.md
+      - Debian/Ubuntu: install/deb.md
+      - Fedora/RHEL: install/rpm.md
+  - Quickstart:
+      - quickstart/index.md
+      - Drop-in guide: quickstart/drop-in.md
+      - Rust template: quickstart/rust.md
+      - C++ template: quickstart/cpp.md
+      - KDE mixed template: quickstart/kde-mixed.md
+  - Concepts:
+      - concepts/architecture.md
+      - concepts/execution-model.md
+      - concepts/namespaces.md
+      - concepts/caching.md
+      - concepts/reproducibility.md
+  - Configuration:
+      - config/index.md
+      - Config reference: config/reference.md
+      - Profiles: config/profiles.md
+      - Jobs and steps: config/jobs-steps.md
+  - Operations:
+      - operations/caching.md
+      - operations/manifests.md
+      - operations/logging.md
+      - operations/prune.md
+      - operations/troubleshooting.md
+  - Reference:
+      - CLI: reference/cli.md
+      - Manifest: reference/manifest.md
+      - Logging: reference/logging.md
+  - Development:
+      - development/index.md
+      - Packaging: development/packaging.md
+      - Releasing: development/releasing.md
+      - Supply-chain gates: development/supply-chain.md
+      - Docs site toolchain: development/docs-site.md
+  - Roadmap: roadmap.md
+  - Licensing: licensing.md
+  - Rust API docs: rustdoc/index.md
