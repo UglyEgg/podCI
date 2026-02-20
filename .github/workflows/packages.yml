@@ -2,6 +2,9 @@ name: Packages
 
 on:
   push:
+  #  tags:
+  #    - "v*"
+  #workflow_dispatch:
 
 permissions:
   contents: read
@@ -14,10 +17,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Ensure a working Rust toolchain for dh-cargo (avoid rustup "no default toolchain" failures).
+      - name: Set up Rust (stable)
+        uses: dtolnay/rust-toolchain@stable
+
       - name: Install build deps
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends             build-essential             devscripts             debhelper             dh-cargo             pkg-config             ca-certificates             git             rustc             cargo
+          sudo apt-get install -y --no-install-recommends             build-essential             devscripts             debhelper             dh-cargo             pkg-config             ca-certificates             git
 
       - name: Prepare debian/ tree
         run: |
@@ -46,10 +53,14 @@ jobs:
       - name: Install build deps
         run: |
           dnf -y update
-          dnf -y install             git             curl             tar             gzip             rpm-build             rpmdevtools             bash-completion             zsh             fish             rust             cargo             pkgconf-pkg-config             ca-certificates
+          dnf -y install             git             curl             tar             gzip             rpm-build             rpmdevtools             bash             rust             cargo             pkgconf-pkg-config             ca-certificates
 
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Mark workspace as safe for git
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
       - name: Build source tarball (local)
         shell: bash
@@ -83,10 +94,14 @@ jobs:
       - name: Install build deps
         run: |
           pacman -Syu --noconfirm
-          pacman -S --noconfirm --needed rust cargo git
+          pacman -S --noconfirm --needed rust cargo git tar gzip
 
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Mark workspace as safe for git
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
       - name: Build source tarball (local)
         shell: bash
