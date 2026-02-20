@@ -29,7 +29,7 @@ A local-first CI parity runner for Podman with deterministic caching.
 %build
 # Generate man page + shell completions into ./dist/
 %{__cargo} run -p podci --bin podci-assets --features gen-assets --locked -- gen
-%cargo_build --release
+%cargo_build
 
 %check
 %cargo_test

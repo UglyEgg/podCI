@@ -8,7 +8,7 @@
 override_dh_auto_build:
 	# Generate man page + shell completions into ./dist/
 	cargo run -p podci --bin podci-assets --features gen-assets --locked -- gen
-	dh_auto_build --release -- --locked
+	dh_auto_build --release -- --offline
 
 override_dh_auto_install:
 	dh_auto_install
