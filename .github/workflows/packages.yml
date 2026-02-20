@@ -2,9 +2,9 @@ name: Packages
 
 on:
   push:
-  #  tags:
-  #    - "v*"
-  #workflow_dispatch:
+    tags:
+      - "v*"
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -17,9 +17,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Ensure a working Rust toolchain for dh-cargo (avoid rustup "no default toolchain" failures).
+      # dh-cargo uses rustup proxies on the runner; ensure a configured default toolchain.
       - name: Set up Rust (stable)
         uses: dtolnay/rust-toolchain@stable
+
+      - name: Configure rustup default toolchain
+        run: |
+          rustup default stable
+          rustc -vV
+          cargo -vV
 
       - name: Install build deps
         run: |
@@ -30,8 +36,11 @@ jobs:
         run: |
           rm -rf ./debian
           cp -a packaging/debian ./debian
+          chmod +x debian/rules
 
       - name: Build deb
+        env:
+          RUSTUP_TOOLCHAIN: stable
         run: |
           dpkg-buildpackage -us -uc -b
 
@@ -67,23 +76,24 @@ jobs:
         run: |
           ./scripts/make_source_tarball.sh out
           ver="$(cat VERSION)"
-          mkdir -p ~/rpmbuild/{SOURCES,SPECS}
-          cp packaging/rpm/podci.spec ~/rpmbuild/SPECS/
+          rpmbuild_root="${HOME}/rpmbuild"
+          mkdir -p "${rpmbuild_root}/SOURCES" "${rpmbuild_root}/SPECS"
+          cp packaging/rpm/podci.spec "${rpmbuild_root}/SPECS/"
           # The spec Source0 basename is v<version>.tar.gz; provide it locally.
-          cp "out/podci-${ver}.tar.gz" "~/rpmbuild/SOURCES/v${ver}.tar.gz"
+          cp "out/podci-${ver}.tar.gz" "${rpmbuild_root}/SOURCES/v${ver}.tar.gz"
 
       - name: Build rpm
         shell: bash
         run: |
-          rpmbuild -ba ~/rpmbuild/SPECS/podci.spec
+          rpmbuild -ba "${HOME}/rpmbuild/SPECS/podci.spec"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: rpm
           path: |
-            /root/rpmbuild/RPMS/**/podci-*.rpm
-            /root/rpmbuild/SRPMS/podci-*.src.rpm
+            ${HOME}/rpmbuild/RPMS/**/podci-*.rpm
+            ${HOME}/rpmbuild/SRPMS/podci-*.src.rpm
 
   arch:
     name: Build Arch package (pkg.tar.zst)
@@ -94,7 +104,8 @@ jobs:
       - name: Install build deps
         run: |
           pacman -Syu --noconfirm
-          pacman -S --noconfirm --needed rust cargo git tar gzip
+          # Install runtime deps too so makepkg doesn't try to sudo-install them (non-interactive CI).
+          pacman -S --noconfirm --needed             rust cargo git tar gzip             podman
 
       - name: Checkout
         uses: actions/checkout@v4
