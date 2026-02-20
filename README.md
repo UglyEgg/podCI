@@ -5,6 +5,9 @@
   <img src="docs/assets/Varanid_Works-podci-1600x400.webp" alt="Varanid Works – podCI" />
 </p>
 
+[![CI](https://github.com/UglyEgg/podCI/actions/workflows/ci.yml/badge.svg)](https://github.com/UglyEgg/podCI/actions/workflows/ci.yml)
+[![Docs (GitHub Pages)](https://github.com/UglyEgg/podCI/actions/workflows/pages.yml/badge.svg)](https://github.com/UglyEgg/podCI/actions/workflows/pages.yml)
+
 # podCI
 
 `podCI` ("Podman Continuous Integration") is a **local-first, Podman-backed CI runner** meant to be embedded into repository templates so teams can compile and test quickly with consistent behavior across machines.
