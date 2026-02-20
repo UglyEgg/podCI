@@ -4,9 +4,13 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
-  ci:
+  linux-musl:
     runs-on: ubuntu-latest
+
     container:
       image: rust:1-alpine
 
@@ -14,14 +18,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Alpine deps
+      - name: Install system dependencies
         run: |
-          apk add --no-cache bash curl ca-certificates git build-base musl-dev pkgconfig
+          apk add --no-cache bash build-base musl-dev pkgconfig git
 
-      - name: Install cargo-nextest (prebuilt)
+      - name: Install Rust components (rustfmt, clippy)
         run: |
-          mkdir -p "${CARGO_HOME:-$HOME/.cargo}/bin"
-          curl -LsSf https://get.nexte.st/latest/linux-musl | tar zxf - -C "${CARGO_HOME:-$HOME/.cargo}/bin"
+          rustup component add rustfmt clippy
 
       - name: Install cargo-deny
         run: |
@@ -29,10 +32,12 @@ jobs:
 
       - name: Install cargo-pretty-test
         run: |
-          # cargo install --locked uses the crate's packaged Cargo.lock if present.
-          # If a crate does not publish a lockfile, --locked can fail; avoid making CI brittle.
-          cargo install cargo-pretty-test
+          cargo install cargo-pretty-test --locked
 
-      - name: Release gate
+      - name: Install cargo-nextest (prebuilt)
+        run: |
+          curl -fsSL https://get.nexte.st/latest/linux-musl | tar -xz -C /usr/local/bin
+
+      - name: Gate
         run: |
           ./scripts/release_gate.sh
