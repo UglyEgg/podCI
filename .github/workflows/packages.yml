@@ -1,0 +1,123 @@
+name: Packages
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deb:
+    name: Build .deb (Debian/Ubuntu)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install build deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends             build-essential             devscripts             debhelper             dh-cargo             pkg-config             ca-certificates             git             rustc             cargo
+
+      - name: Prepare debian/ tree
+        run: |
+          rm -rf ./debian
+          cp -a packaging/debian ./debian
+
+      - name: Build deb
+        run: |
+          dpkg-buildpackage -us -uc -b
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: deb
+          path: |
+            ../podci_*.deb
+            ../podci_*.buildinfo
+            ../podci_*.changes
+
+  rpm:
+    name: Build .rpm (Fedora)
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:40
+    steps:
+      - name: Install build deps
+        run: |
+          dnf -y update
+          dnf -y install             git             curl             tar             gzip             rpm-build             rpmdevtools             bash-completion             zsh             fish             rust             cargo             pkgconf-pkg-config             ca-certificates
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build source tarball (local)
+        shell: bash
+        run: |
+          ./scripts/make_source_tarball.sh out
+          ver="$(cat VERSION)"
+          mkdir -p ~/rpmbuild/{SOURCES,SPECS}
+          cp packaging/rpm/podci.spec ~/rpmbuild/SPECS/
+          # The spec Source0 basename is v<version>.tar.gz; provide it locally.
+          cp "out/podci-${ver}.tar.gz" "~/rpmbuild/SOURCES/v${ver}.tar.gz"
+
+      - name: Build rpm
+        shell: bash
+        run: |
+          rpmbuild -ba ~/rpmbuild/SPECS/podci.spec
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: rpm
+          path: |
+            /root/rpmbuild/RPMS/**/podci-*.rpm
+            /root/rpmbuild/SRPMS/podci-*.src.rpm
+
+  arch:
+    name: Build Arch package (pkg.tar.zst)
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:base-devel
+    steps:
+      - name: Install build deps
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm --needed rust cargo git
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build source tarball (local)
+        shell: bash
+        run: |
+          ./scripts/make_source_tarball.sh out
+          ver="$(cat VERSION)"
+          mkdir -p /tmp/srcdest
+          cp "out/podci-${ver}.tar.gz" "/tmp/srcdest/podci-${ver}.tar.gz"
+
+      - name: Build package (makepkg)
+        shell: bash
+        run: |
+          mkdir -p /tmp/pkgbuild
+          cp packaging/arch/PKGBUILD /tmp/pkgbuild/PKGBUILD
+
+          useradd -m builder
+          chown -R builder:builder /tmp/pkgbuild /tmp/srcdest
+
+          sudo -u builder bash -lc '
+            set -euo pipefail
+            export SRCDEST=/tmp/srcdest
+            cd /tmp/pkgbuild
+            makepkg -sf --noconfirm
+          '
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: arch
+          path: |
+            /tmp/pkgbuild/*.pkg.tar.*
