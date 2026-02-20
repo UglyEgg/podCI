@@ -1,0 +1,72 @@
+# podCI — .gitignore (NOT committed by request)
+# Keep repo clean: commit only source, configs, docs, packaging recipes.
+
+############################
+# Rust / Cargo
+############################
+/target/
+**/*.rs.bk
+
+############################
+# podCI local project state (developer-local)
+############################
+/.podci/
+
+############################
+# Build / release artifacts
+############################
+/out/
+/dist/
+*.tar.gz
+*.tgz
+*.sha256
+
+############################
+# Docs build outputs
+############################
+/site/
+/docs/rustdoc/api/
+
+############################
+# Python tooling (docs)
+############################
+/.venv/
+/venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+############################
+# Coverage / profiling
+############################
+coverage/
+*.profraw
+*.profdata
+lcov.info
+.tarpaulin-report.html
+
+############################
+# Editor / OS junk
+############################
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+############################
+# Arch packaging build outputs (if running makepkg under packaging/arch)
+############################
+/packaging/arch/pkg/
+/packaging/arch/src/
+
+############################
+# AI-only continuity / handoff material
+# (If already tracked, you'll need: git rm -r --cached .ai)
+############################
+/.ai/
+AGENTS.md

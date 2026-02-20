@@ -1,0 +1,64 @@
+# SPDX-License-Identifier: MIT OR Apache-2.0
+# Copyright (c) 2026 Richard Majewski - Varanid Works
+
+[workspace]
+resolver = "2"
+members = [
+  "crates/cli",
+  "crates/config",
+  "crates/namespace",
+  "crates/manifest",
+  "crates/podman",
+  "crates/gc",
+  "crates/templates",
+]
+
+[workspace.package]
+edition = "2021"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/UglyEgg/podCI"
+homepage = "https://github.com/UglyEgg/podCI"
+
+[workspace.dependencies]
+anyhow = "1"
+blake3 = "1"
+clap = { version = "4", features = ["derive", "env"] }
+clap_complete = "4"
+clap_mangen = "0.2"
+etcetera = "0.11"
+flate2 = { version = "1", default-features = false, features = [
+  "rust_backend",
+] }
+tar = "0.4"
+rand = "0.8"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+schemars = "0.8"
+toml = "0.8"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = [
+  "env-filter",
+  "fmt",
+  "json",
+] }
+chrono = { version = "0.4", default-features = false, features = [
+  "clock",
+  "serde",
+] }
+tokio = { version = "1", features = [
+  "rt-multi-thread",
+  "macros",
+  "process",
+  "time",
+  "fs",
+  "io-util",
+  "signal",
+] }
+
+# Used for robust PATH resolution on multiple distros.
+which = "6"
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true

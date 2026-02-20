@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: MIT OR Apache-2.0
+# Copyright (c) 2026 Richard Majewski - Varanid Works
+
+version = 1
+project = "REPLACE_ME"
+
+# Generic default: runs a no-op step so `podci run` works immediately.
+# Replace this file with a language-specific template (rust/cpp/kde-mixed) or edit by hand.
+
+[profiles.dev]
+container = "alpine:3.20"
+
+[jobs.default]
+profile = "dev"
+step_order = ["info"]
+
+[jobs.default.steps.info]
+run = ["sh", "-c", "echo 'podCI initialized for REPLACE_ME'; echo 'Edit podci.toml to define real steps.'"]

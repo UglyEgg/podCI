@@ -1,0 +1,45 @@
+# SPDX-License-Identifier: MIT OR Apache-2.0
+# Copyright (c) 2026 Richard Majewski - Varanid Works
+
+# Maintainer: Richard Majewski <rmajewski@pm.me>
+
+pkgname=podci
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="podCI: Podman Continuous Integration runner (local-first CI parity)"
+arch=('x86_64' 'aarch64')
+_github_owner="UglyEgg"
+_github_repo="podCI"
+url="https://github.com/${_github_owner}/${_github_repo}"
+license=('MIT' 'Apache')
+depends=('podman')
+makedepends=('rust' 'cargo')
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/refs/tags/v${pkgver}.tar.gz")
+sha256sums=('SKIP')
+
+build() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  # Generate man page + completions (written to ./dist/)
+  cargo run -p podci --bin podci-assets --features gen-assets --locked -- gen
+
+  cargo build --release --locked
+}
+
+package() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  install -Dm755 "target/release/podci" "${pkgdir}/usr/bin/podci"
+
+  # Templates (on-disk; used by `podci init`)
+  install -d "${pkgdir}/usr/share/podci/templates"
+  cp -a templates/* "${pkgdir}/usr/share/podci/templates/"
+
+  # Optional assets (generated during build)
+  if [[ -f dist/podci.1 ]]; then
+    install -Dm644 dist/podci.1 "${pkgdir}/usr/share/man/man1/podci.1"
+  fi
+  if [[ -d dist/completions ]]; then
+    install -Dm644 dist/completions/podci.bash "${pkgdir}/usr/share/bash-completion/completions/podci" || true
+    install -Dm644 dist/completions/_podci "${pkgdir}/usr/share/zsh/site-functions/_podci" || true
+    install -Dm644 dist/completions/podci.fish "${pkgdir}/usr/share/fish/vendor_completions.d/podci.fish" || true
+  fi
+}

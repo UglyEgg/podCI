@@ -1,0 +1,66 @@
+# SPDX-License-Identifier: MIT OR Apache-2.0
+# Copyright (c) 2026 Richard Majewski - Varanid Works
+
+# cargo-deny policy.
+#
+# Notes on newer cargo-deny versions:
+# - `licenses.unlicensed` was removed. Unlicensed crates now fail by default.
+#   Use `[[licenses.clarify]]` if you must temporarily pin a crate's license.
+# - `licenses.deny` was removed. Licenses are denied by default unless present
+#   in `licenses.allow` or explicitly granted via `licenses.exceptions`.
+
+[graph]
+targets = ["x86_64-unknown-linux-gnu", "x86_64-unknown-linux-musl"]
+all-features = true
+
+[advisories]
+db-urls = ["https://github.com/RustSec/advisory-db"]
+db-path = "~/.cargo/advisory-db"
+# Newer cargo-deny versions no longer accept a lint level for `unmaintained`.
+# Keep prior intent: ignore unmaintained advisories in CI/release gates.
+unmaintained = "none"
+yanked = "warn"
+ignore = []
+
+[licenses]
+confidence-threshold = 0.8
+unused-allowed-license = "allow"
+
+# Keep transitive deps permissive.
+# Any license NOT listed here is denied by default.
+allow = [
+  "Apache-2.0",
+  "MIT",
+  "BSD-2-Clause",
+  "BSD-3-Clause",
+  "ISC",
+  "CC0-1.0",
+  "Zlib",
+  "Unicode-DFS-2016",
+  "Unicode-3.0",
+]
+
+# Keep empty unless a specific crate needs a narrowly-scoped allowance.
+# Example:
+# exceptions = [ { crate = "some-crate", allow = ["OpenSSL"] } ]
+exceptions = []
+
+[bans]
+multiple-versions = "warn"
+wildcards = "deny"
+highlight = "all"
+
+# Keep the list empty unless we need to explicitly ban a crate.
+deny = []
+skip = []
+skip-tree = []
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+
+# The default crates.io registry is always allowed.
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+
+# Git dependencies are discouraged for release/packaging; if we add one, CI should force an explicit allowlist.
+allow-git = []

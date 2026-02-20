@@ -1,0 +1,30 @@
+# SPDX-License-Identifier: MIT OR Apache-2.0
+# Copyright (c) 2026 Richard Majewski - Varanid Works
+
+version = 1
+project = "REPLACE_ME"
+
+[profiles.dev]
+container = "kde-mixed-debian"
+
+[jobs.default]
+profile = "dev"
+step_order = ["rust_fmt", "rust_lint", "cpp_configure", "cpp_build", "cpp_test", "rust_test"]
+
+[jobs.default.steps.rust_fmt]
+run = ["cargo", "fmt", "--all", "--", "--check"]
+
+[jobs.default.steps.rust_lint]
+run = ["cargo", "clippy", "--all-targets", "--all-features", "--", "-D", "warnings"]
+
+[jobs.default.steps.cpp_configure]
+run = ["cmake", "-S", ".", "-B", "build", "-G", "Ninja", "-DCMAKE_BUILD_TYPE=RelWithDebInfo"]
+
+[jobs.default.steps.cpp_build]
+run = ["cmake", "--build", "build", "-j"]
+
+[jobs.default.steps.cpp_test]
+run = ["ctest", "--test-dir", "build", "--output-on-failure"]
+
+[jobs.default.steps.rust_test]
+run = ["cargo", "test"]

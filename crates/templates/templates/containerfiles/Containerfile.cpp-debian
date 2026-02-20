@@ -1,0 +1,22 @@
+# SPDX-License-Identifier: MIT OR Apache-2.0
+# Copyright (c) 2026 Richard Majewski - Varanid Works
+
+FROM docker.io/library/debian:bookworm
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+      ca-certificates curl git \
+      build-essential cmake ninja-build pkg-config \
+      clang lld \
+      ccache \
+ && rm -rf /var/lib/apt/lists/*
+
+# Optional: allow repos that also have Rust tooling.
+RUN curl -fsSL https://sh.rustup.rs | sh -s -- -y --profile minimal \
+ && /root/.cargo/bin/rustup component add rustfmt clippy \
+ && /root/.cargo/bin/cargo install cargo-nextest --locked \
+ && rm -rf /root/.cargo/registry /root/.cargo/git
+
+ENV PATH=/root/.cargo/bin:$PATH

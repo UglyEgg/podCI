@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: MIT OR Apache-2.0
+# Copyright (c) 2026 Richard Majewski - Varanid Works
+
+version = 1
+project = "REPLACE_ME"
+
+[profiles.dev]
+container = "cpp-debian"
+
+[jobs.default]
+profile = "dev"
+step_order = ["configure", "build", "test"]
+
+[jobs.default.steps.configure]
+run = ["cmake", "-S", ".", "-B", "build", "-G", "Ninja", "-DCMAKE_BUILD_TYPE=RelWithDebInfo"]
+
+[jobs.default.steps.build]
+run = ["cmake", "--build", "build", "-j"]
+
+[jobs.default.steps.test]
+run = ["ctest", "--test-dir", "build", "--output-on-failure"]

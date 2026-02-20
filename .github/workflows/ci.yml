@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    container:
+      image: rust:1-alpine
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Alpine deps
+        run: |
+          apk add --no-cache bash curl ca-certificates git build-base musl-dev pkgconfig
+
+      - name: Install cargo-nextest (prebuilt)
+        run: |
+          mkdir -p "${CARGO_HOME:-$HOME/.cargo}/bin"
+          curl -LsSf https://get.nexte.st/latest/linux-musl | tar zxf - -C "${CARGO_HOME:-$HOME/.cargo}/bin"
+
+      - name: Install cargo-deny
+        run: |
+          cargo install cargo-deny --locked
+
+      - name: Install cargo-pretty-test
+        run: |
+          # cargo install --locked uses the crate's packaged Cargo.lock if present.
+          # If a crate does not publish a lockfile, --locked can fail; avoid making CI brittle.
+          cargo install cargo-pretty-test
+
+      - name: Release gate
+        run: |
+          ./scripts/release_gate.sh

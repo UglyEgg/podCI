@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: MIT OR Apache-2.0
+# Copyright (c) 2026 Richard Majewski - Varanid Works
+
+Source: podci
+Section: devel
+Priority: optional
+Maintainer: Richard Majewski <rmajewski@pm.me>
+Build-Depends: debhelper-compat (= 13), dh-cargo, cargo, rustc
+Standards-Version: 4.6.2
+Homepage: https://github.com/UglyEgg/podCI
+Rules-Requires-Root: no
+
+Package: podci
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}, podman
+Description: podCI: Podman Continuous Integration runner (local-first CI parity)
+ A local-first CI parity runner for Podman with deterministic caching.
