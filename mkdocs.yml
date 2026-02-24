@@ -3,7 +3,7 @@
 
 site_name: podCI
 site_description: Local-first Podman CI runner for reproducible multi-language builds
-site_url: https://uglyegg.github.io/podCI/
+site_url: https://podci.entropy.quest/
 repo_name: UglyEgg/podCI
 repo_url: https://github.com/UglyEgg/podCI
 site_author: Richard Majewski - Varanid Works
