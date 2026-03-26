@@ -10,6 +10,16 @@
 
 # podCI
 
+## Status
+
+podCI is currently in a temporary stabilization phase while active development focus is on [crushr](https://github.com/UglyEgg/crushr) (a related integrity-first archival system).
+
+The core model and design remain unchanged. Targeted work is planned to restore and harden deterministic execution, environment reproducibility, and release workflows.
+
+Development will resume following the crushr 1.0 milestone, with a focus on reliability and production readiness.
+
+---
+
 `podCI` ("Podman Continuous Integration") is a **local-first, Podman-backed CI runner** meant to be embedded into repository templates so teams can compile and test quickly with consistent behavior across machines.
 
 It is designed for **multi-language repos** and mixed stacks (common in KDE/Qt and platform tooling): Rust, C++, and (soon) Python via `uv`.
